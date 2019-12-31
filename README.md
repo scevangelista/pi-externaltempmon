@@ -1,5 +1,6 @@
 # pi-externaltempmon
 External Temp Monitor using Raspberry-Pi and DHT11 Sensor
+Send email if you temp is elevate.
 
 The first step is to download the sensor library: 
 Adafruit Python DHT Sensor Library https://github.com/adafruit/Adafruit_Python_DHT 
