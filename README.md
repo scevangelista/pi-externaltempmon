@@ -9,3 +9,6 @@ Customize the mon.py with your preferences.
 
 Execute the script: 
 $ python mon.py
+
+Dependency:
+https://github.com/adafruit/DHT-sensor-library
