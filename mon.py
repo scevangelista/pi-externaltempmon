@@ -6,11 +6,11 @@ import smtplib
 import socket
 
 # Vars of control
-alerta = 0
-alertado = 0
+alert = 0
+alerted = 0
 
 # GPIO of Sensor
-sensor_gpío = 25
+sensor_gpio = 25
 
 #Model of Sensor
 sensor_model = Adafruit_DHT.DHT11
@@ -20,7 +20,7 @@ frequency = 10
 
 
 # Function of send email 
-def enviaEmail(message, subject_email):  
+def sendEmail(message, subject_email):  
     # Configure the emails #
     from_email = 'fromemail@...'
     from_password = 'password'
@@ -47,41 +47,40 @@ def enviaEmail(message, subject_email):
 GPIO.setmode(GPIO.BOARD)
 
 while(1):
-    humidity, temperature = Adafruit_DHT.read_retry(sensor_model, sensor_gpío);
+    humidity, temperature = Adafruit_DHT.read_retry(sensor_model, sensor_gpio);
 
     if temperature is not None:
         x = int(temperature)
         
         if x < 20:
-            print("Temperatura Normal")
-            texto = "Estamos com %i graus no Datacenter de Goioere, o uso do ar pode estar elevado." % x;      
-            assunto = "MONITORAMENTO DE TEMPERATURA - TEMPERATURA ABAIXO DO NORMAL" 
-            alerta = 1
+            print("Low temperature")
+            body = "%i degrees Celsius in Datacenter." % x;      
+            subject = "TEMPERATURE MONITOR - LOW" 
+            alert = 1
         elif x >= 20 and x < 24:
-            print("Temperatura Aceitavel")
-            texto = "Agora estamos com %i graus no Datacenter de Goioere, uma temperatura excelente." % x; 
-            assunto = "MONITORAMENTO DE TEMPERATURA - TEMPERATURA NORMAL"           
-            alerta = 2
+            print("Normal temperatura")
+            body = "%i degrees Celsius in Datacenter." % x; 
+            subject = "TEMPERATURE MONITOR - NORMAL"           
+            alert = 2
         elif x >= 24 and x < 26:
-            print("Temperatura fora do Normal")
-            texto = "Estamos com %i graus no Datacenter de Goioere, uma temperatura fora do normal." % x;
-            assunto = "MONITORAMENTO DE TEMPERATURA - TEMPERATURA FORA DO NORMAL"
-            alerta = 3
+            print("High Temperature")
+            body = "%i degrees Celsius in Datacenter." % x;
+            subject = "TEMPERATURE MONITOR - HIGH - WARNING"
+            alert = 3
         elif x >= 26:
-            print("Corre!")
-            texto = "PROBLEMAS NO AR CONDICIONADO!. Estamos com %i graus no Datacenter de Goioere, uma temperatura MUITO ALTA." % x;
-            assunto = "MONITORAMENTO DE TEMPERATURA - PROBLEMAS NO AR CONDICIONADO"
-            alerta = 4
+            print("Very High Temperature")
+            body = "Air conditioning problems! %i degrees Celsius in Datacenter." % x;
+            subject = "TEMPERATURE MONITOR - VERY HIGH - ALERT"
+            alert = 4
         else:
-            print("Falha na leitura")
+            print("Error in DHT")
 
-        if alerta != alertado:
-            enviaEmail(texto, assunto);
-            alertado = alerta
-        elif alerta == 4:
-            enviaEmail(texto, assunto);
+        if alert != alerted:
+            sendEmail(body, subject);
+            alerted = alert
+        elif alert == 4:
+            sendEmail(body, subject);
 
         time.sleep(frequency)
     else:
-        # Mensagem de erro de comunicacao com o sensor
-        print("Falha ao ler dados do Sensor !!!")
+        print("Error to retrieve sensor data");
